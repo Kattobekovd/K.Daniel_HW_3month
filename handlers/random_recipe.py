@@ -1,7 +1,9 @@
 from aiogram import Router, types, F
 from random import choice
 
+
 random_recipe_router = Router()
+
 
 @random_recipe_router.message(F.text == 'Хочу рецепт')
 async def random_recipe_handler(message: types.Message):
@@ -20,7 +22,9 @@ async def random_recipe_handler(message: types.Message):
         }
     ]
 
+
     selected_recipe = choice(recipes)
+
 
     await message.answer_photo(
         photo=types.FSInputFile(selected_recipe['photo']),

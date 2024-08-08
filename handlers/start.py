@@ -1,7 +1,10 @@
 from aiogram import Router, types, F
 from aiogram.filters.command import Command
 
+
 start_router = Router()
+
+
 @start_router.message(Command('start'))
 async def start_command_handler(message: types.Message):
     # print(vars(message.from_user))

@@ -1,11 +1,11 @@
 import asyncio
 
-from aiogram import Bot, Dispatcher
 from bot_config import bot, dp
 from handlers.start import start_router
 from handlers.myinfo import myinfo_router
 from handlers.random_recipe import random_recipe_router
-from dishes import dishes_router
+from handlers.dishes import dishes_router
+
 
 async def main():
     dp.include_router(start_router)
