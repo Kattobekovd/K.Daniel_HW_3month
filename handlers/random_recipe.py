@@ -22,9 +22,7 @@ async def random_recipe_handler(message: types.Message):
         }
     ]
 
-
     selected_recipe = choice(recipes)
-
 
     await message.answer_photo(
         photo=types.FSInputFile(selected_recipe['photo']),

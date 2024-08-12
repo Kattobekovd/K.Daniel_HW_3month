@@ -22,6 +22,9 @@ async def start_command_handler(message: types.Message):
                 types.InlineKeyboardButton(text='Контакты ', callback_data='contact'),
                 types.InlineKeyboardButton(text='Вакансии', callback_data='vacancies'),
 
+            ],
+            [
+                types.InlineKeyboardButton(text="Оставить отзыв", callback_data='feedback'),
             ]
         ]
     )
