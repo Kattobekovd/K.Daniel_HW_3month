@@ -2,7 +2,7 @@ from aiogram import Router, types, F
 from aiogram.filters.command import Command
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
-
+from bot_config import database
 
 review_router = Router()
 
@@ -140,6 +140,20 @@ async def handle_cleanliness_rating_text(message: types.Message, state: FSMConte
 async def process_extra_comments(message: types.Message, state: FSMContext):
     await state.update_data(extra_comments=message.text)
     await message.answer('Cпасибо за оставленный отзыв!')
+    data = await state.get_data()
+    print(data)
+
+    database.execute(
+        query="INSERT INTO survey_results (name, contact, visit_date, food_rating, cleanliness_rating, additional_comments) VALUES (?, ?, ?, ?, ?, ?)",
+        params=(
+            data.get('name'),
+            data.get('contact'),
+            data.get('visit_date'),
+            data.get('food_rating'),
+            data.get('cleanliness_rating'),
+            data.get('additional_comments')
+        )
+    )
 
     await state.clear()
 
