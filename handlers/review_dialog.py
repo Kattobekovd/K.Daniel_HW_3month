@@ -35,6 +35,7 @@ async def process_contact(message: types.Message, state: FSMContext):
     await state.set_state(ReviewDialog.visit_date)
     await message.answer('Дата вашего посещения нашего заведения?')
 
+
 @review_router.message(ReviewDialog.visit_date)
 async def process_contact(message: types.Message, state: FSMContext):
     visit_date = message.text
@@ -62,15 +63,17 @@ async def process_contact(message: types.Message, state: FSMContext):
 
 @review_router.callback_query(ReviewDialog.food_rating)
 async def food_rating(callback: types.CallbackQuery, state: FSMContext):
-    rating = int(callback.data)
+    print (callback.data)
     processing_rating = {
         5: "Отлично! Мы рады, что вам понравилось!",
         4: "Хорошо! Спасибо за ваш отзыв!",
         3: "Спасибо за отзыв! Мы учтём ваши пожелания.",
         2: "Сожалеем, что вам не понравилось. Мы постараемся улучшить качество."
     }
+    rating = int(callback.data)
     await callback.message.answer(processing_rating[rating])
     await state.update_data(food_rating=rating)
+
     await state.set_state(ReviewDialog.cleanliness_rating)
 
     kb = types.InlineKeyboardMarkup(
@@ -105,8 +108,30 @@ async def process_cleanliness_rating(callback: types.CallbackQuery, state: FSMCo
 
 @review_router.message(ReviewDialog.food_rating)
 async def handle_food_rating_text(message: types.Message, state: FSMContext):
-    await message.answer("Спасибо за отзыв! Продолжаем опрос.")
+    await message.answer("Нажмите на кнопки!!!")
+    await state.set_state(ReviewDialog.food_rating)
+
+    kb = types.InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                types.InlineKeyboardButton(text="Отлично", callback_data="5"),
+                types.InlineKeyboardButton(text="Хорошо", callback_data="4"),
+            ],
+            [
+                types.InlineKeyboardButton(text="Удовлетворительно", callback_data="3"),
+                types.InlineKeyboardButton(text="Плохо", callback_data="2"),
+            ]
+        ]
+    )
+    await message.answer('Как вы оцениваете качество еды?', reply_markup=kb)
+
+
+# так же проверям на слаучаи текста место инлайн кнопок
+@review_router.message(ReviewDialog.cleanliness_rating)
+async def handle_cleanliness_rating_text(message: types.Message, state: FSMContext):
+    await message.answer("Нажмите на кнопки!!!")
     await state.set_state(ReviewDialog.cleanliness_rating)
+
     kb = types.InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -122,14 +147,6 @@ async def handle_food_rating_text(message: types.Message, state: FSMContext):
     await message.answer('Как вы оцениваете чистоту заведения?', reply_markup=kb)
 
 
-#так же проверям на слаучаи текста место инлайн кнопок
-@review_router.message(ReviewDialog.cleanliness_rating)
-async def handle_cleanliness_rating_text(message: types.Message, state: FSMContext):
-    await message.answer("Спасибо за отзыв! Продолжаем опрос.")
-    await state.set_state(ReviewDialog.extra_comments)
-    await message.answer('Дополнительные комментарии?')
-
-
 @review_router.message(ReviewDialog.extra_comments)
 async def process_extra_comments(message: types.Message, state: FSMContext):
     await state.update_data(extra_comments=message.text)
@@ -138,7 +155,8 @@ async def process_extra_comments(message: types.Message, state: FSMContext):
     print(data)
 
     database.execute(
-        query="INSERT INTO survey_results (name, contact, visit_date, food_rating, cleanliness_rating, additional_comments) VALUES (?, ?, ?, ?, ?, ?)",
+        query="INSERT INTO survey_results (name, contact, visit_date, food_rating, cleanliness_rating, additional_comments)"
+              " VALUES (?, ?, ?, ?, ?, ?)",
         params=(
             data.get('name'),
             data.get('contact'),
