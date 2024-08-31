@@ -32,5 +32,10 @@ async def filter_bad_words(message: types.Message):
                                  f'{message.from_user.first_name} использовал запрешеные слова!!!\n'
                                  f'Действие: БАН на 5 минут'
                                  )
+            await bot.ban_chat_member(
+                chat_id=message.chat.id,
+                user_id=message.from_user.id,
+                until_date=timedelta(minutes=5)
+            )
             await message.delete()
             break
